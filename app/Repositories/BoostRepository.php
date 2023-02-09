@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class BoostRepository
 {
-    public static function findActive($id)
+    public static function findActive(int $id) : null|object
     {
         $boost = Boost::whereAdvert($id)
             ->where('started_at', '<=', Carbon::now())

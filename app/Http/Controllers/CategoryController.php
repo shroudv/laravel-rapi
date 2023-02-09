@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\Category\CategoryCollection;
 use App\Http\Resources\Category\CategoryResource;
 use App\Models\Category;
+use App\Repositories\StatusRepository;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -17,7 +18,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories=Category::isActive()->get();
-        return new CategoryCollection($categories);
+        return StatusRepository::response(new CategoryCollection($categories));
     }
 
     /**
@@ -49,8 +50,10 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        $category=Category::isActive()->find($id);
-        return new CategoryResource($category);
+        $category=Category::isActive()->find($id)
+        ?? StatusRepository::notFound('category');
+
+        return StatusRepository::response(new CategoryResource($category));
     }
 
     /**

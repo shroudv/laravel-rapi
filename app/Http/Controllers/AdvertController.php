@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AdvertShowEvent;
 use App\Http\Resources\Advert\AdvertCollection;
 use App\Http\Resources\Advert\AdvertResource;
 use App\Models\Advert;
 use App\Repositories\AdvertRepository;
+use App\Repositories\StatusRepository;
 use Illuminate\Http\Request;
 
 class AdvertController extends Controller
@@ -26,7 +28,7 @@ class AdvertController extends Controller
     public function index()
     {
         $adverts = Advert::isActive()->paginate($this->perPage);
-        return new AdvertCollection($adverts);
+        return StatusRepository::response(new AdvertCollection($adverts));
     }
 
     /**
@@ -56,10 +58,12 @@ class AdvertController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
-        $advert = AdvertRepository::find($id, true);
-        return new AdvertResource($advert);
+        $advert = AdvertRepository::find($id, true)
+        ?? StatusRepository::notFound('advert');
+
+        return StatusRepository::response( new AdvertResource($advert));
     }
 
     /**
@@ -80,7 +84,7 @@ class AdvertController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         //
     }
